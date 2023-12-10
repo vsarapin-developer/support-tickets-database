@@ -1,1 +1,1 @@
-# support-tickets-database
+Database connection and queries for  ticket/inboxes/messages counts
