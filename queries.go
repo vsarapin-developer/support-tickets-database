@@ -400,7 +400,7 @@ func GetKYCFilledCount(dbConfig DBConfig, progress *pb.ProgressBar) map[string][
 		CROSS JOIN
 			hour_series
 		LEFT JOIN
-			agent_kyc ON DATE_FORMAT(agent_kyc.created_at, '%Y-%m-%d') = date_series.created_date
+			agent_kyc ON DATE_FORMAT(agent_kyc.filled_at, '%Y-%m-%d') = date_series.created_date
 					AND agent_kyc.filled_at >= '2024-05-26' AND agent_kyc.filled_at <= '2024-06-25'
 					AND HOUR(agent_kyc.filled_at) >= hour_series.hour_start
                     AND HOUR(agent_kyc.filled_at) < hour_series.hour_end
