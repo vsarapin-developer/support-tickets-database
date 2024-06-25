@@ -16,11 +16,11 @@ func GetTicketsCount(dbConfig DBConfig, progress *pb.ProgressBar) ([]string, map
 
 	rows, err := db.Query(`
         WITH RECURSIVE date_series AS (
-            SELECT '2024-05-20' AS created_date
+            SELECT '2024-05-26' AS created_date
             UNION ALL
             SELECT created_date + INTERVAL 1 DAY
             FROM date_series
-            WHERE created_date <= '2024-06-21'
+            WHERE created_date <= '2024-06-25'
         ), hour_series AS (
             SELECT 0 AS hour_start, 6 AS hour_end
             UNION ALL
@@ -89,11 +89,11 @@ func GetContactUsCount(dbConfig DBConfig, progress *pb.ProgressBar) map[string][
 
 	rows, err := db.Query(`
 		WITH RECURSIVE date_series AS (
-			SELECT '2024-05-20' AS created_date
+			SELECT '2024-05-26' AS created_date
 			UNION ALL
 			SELECT created_date + INTERVAL 1 DAY
 			FROM date_series
-			WHERE created_date <= '2024-06-21'
+			WHERE created_date <= '2024-06-25'
 		), hour_series AS (
 			SELECT 0 AS hour_start, 6 AS hour_end
 			UNION ALL
@@ -114,7 +114,7 @@ func GetContactUsCount(dbConfig DBConfig, progress *pb.ProgressBar) map[string][
 			hour_series
 		LEFT JOIN
 			inboxes ON DATE_FORMAT(inboxes.created_at, '%Y-%m-%d') = date_series.created_date
-					AND inboxes.created_at >= '2024-05-20' AND inboxes.created_at <= '2024-06-21'
+					AND inboxes.created_at >= '2024-05-26' AND inboxes.created_at <= '2024-06-25'
 					AND HOUR(inboxes.created_at) >= hour_series.hour_start
                     AND HOUR(inboxes.created_at) < hour_series.hour_end
 		GROUP BY
@@ -159,11 +159,11 @@ func GetTicketsMessagesCount(dbConfig DBConfig, progress *pb.ProgressBar) map[st
 
 	rows, err := db.Query(`
 		WITH RECURSIVE date_series AS (
-			SELECT '2024-05-20' AS created_date
+			SELECT '2024-05-26' AS created_date
 			UNION ALL
 			SELECT created_date + INTERVAL 1 DAY
 			FROM date_series
-			WHERE created_date <= '2024-06-21'
+			WHERE created_date <= '2024-06-25'
 		), hour_series AS (
 			SELECT 0 AS hour_start, 6 AS hour_end
 			UNION ALL
@@ -185,8 +185,8 @@ func GetTicketsMessagesCount(dbConfig DBConfig, progress *pb.ProgressBar) map[st
 		LEFT JOIN
 			tickets_messages tm ON DATE_FORMAT(tm.created_at, '%Y-%m-%d') = date_series.created_date
 							AND tm.author_id != 1
-							AND tm.created_at >= '2024-05-20'
-							AND tm.created_at <= '2024-06-21'
+							AND tm.created_at >= '2024-05-26'
+							AND tm.created_at <= '2024-06-25'
 							AND HOUR(tm.created_at) >= hour_series.hour_start
                     		AND HOUR(tm.created_at) < hour_series.hour_end
 		LEFT JOIN
@@ -234,11 +234,11 @@ func GetOperatorsBecomesCount(dbConfig DBConfig, progress *pb.ProgressBar) map[s
 
 	rows, err := db.Query(`
 		WITH RECURSIVE date_series AS (
-			SELECT '2024-05-20' AS created_date
+			SELECT '2024-05-26' AS created_date
 			UNION ALL
 			SELECT created_date + INTERVAL 1 DAY
 			FROM date_series
-			WHERE created_date <= '2024-06-21'
+			WHERE created_date <= '2024-06-25'
 		), hour_series AS (
 			SELECT 0 AS hour_start, 6 AS hour_end
 			UNION ALL
@@ -260,8 +260,8 @@ func GetOperatorsBecomesCount(dbConfig DBConfig, progress *pb.ProgressBar) map[s
 		LEFT JOIN
 			agent_kyc_becomes akb ON DATE_FORMAT(akb.created_at, '%Y-%m-%d') = date_series.created_date
 						AND akb.interesting_account = 'Operator'
-						AND akb.created_at >= '2024-05-20'
-						AND akb.created_at <= '2024-06-21'
+						AND akb.created_at >= '2024-05-26'
+						AND akb.created_at <= '2024-06-25'
 						AND HOUR(akb.created_at) >= hour_series.hour_start
                     	AND HOUR(akb.created_at) < hour_series.hour_end
 		GROUP BY
@@ -305,11 +305,11 @@ func GetVendorsBecomesCount(dbConfig DBConfig, progress *pb.ProgressBar) map[str
 
 	rows, err := db.Query(`
 		WITH RECURSIVE date_series AS (
-			SELECT '2024-05-20' AS created_date
+			SELECT '2024-05-26' AS created_date
 			UNION ALL
 			SELECT created_date + INTERVAL 1 DAY
 			FROM date_series
-			WHERE created_date <= '2024-06-21'
+			WHERE created_date <= '2024-06-25'
 		), hour_series AS (
 			SELECT 0 AS hour_start, 6 AS hour_end
 			UNION ALL
@@ -331,8 +331,8 @@ func GetVendorsBecomesCount(dbConfig DBConfig, progress *pb.ProgressBar) map[str
 		LEFT JOIN
 			agent_kyc_becomes akb ON DATE_FORMAT(akb.created_at, '%Y-%m-%d') = date_series.created_date
 						AND akb.interesting_account = 'Vendor'
-						AND akb.created_at >= '2024-05-20'
-						AND akb.created_at <= '2024-06-21'
+						AND akb.created_at >= '2024-05-26'
+						AND akb.created_at <= '2024-06-25'
 						AND HOUR(akb.created_at) >= hour_series.hour_start
                     	AND HOUR(akb.created_at) < hour_series.hour_end
 		GROUP BY
