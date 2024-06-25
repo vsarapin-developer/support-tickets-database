@@ -259,7 +259,7 @@ func GetOperatorsBecomesCount(dbConfig DBConfig, progress *pb.ProgressBar) map[s
 			hour_series
 		LEFT JOIN
 			agent_kyc_becomes akb ON DATE_FORMAT(akb.created_at, '%Y-%m-%d') = date_series.created_date
-						AND JSON_EXTRACT(akb.agent_params, '$.role') = '2'
+						AND akb.interesting_account = 'Operator'
 						AND akb.created_at >= '2024-05-20'
 						AND akb.created_at <= '2024-06-21'
 						AND HOUR(akb.created_at) >= hour_series.hour_start
