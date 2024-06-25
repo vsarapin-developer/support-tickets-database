@@ -42,6 +42,8 @@ func GetTicketsCount(dbConfig DBConfig, progress *pb.ProgressBar) ([]string, map
         LEFT JOIN
             tickets ON DATE_FORMAT(tickets.created_at, '%Y-%m-%d') = date_series.created_date
                     AND recipient_id = 1 AND is_inbox = 0
+					AND tickets.created_at >= '2024-05-26'
+					AND tickets.created_at <= '2024-06-25'
                     AND HOUR(tickets.created_at) >= hour_series.hour_start
                     AND HOUR(tickets.created_at) < hour_series.hour_end
         GROUP BY
