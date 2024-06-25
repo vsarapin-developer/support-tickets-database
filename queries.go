@@ -366,3 +366,73 @@ func GetVendorsBecomesCount(dbConfig DBConfig, progress *pb.ProgressBar) map[str
 	progress.Increment()
 	return result
 }
+
+func GetKYCFilledCount(dbConfig DBConfig, progress *pb.ProgressBar) map[string][4]uint {
+	db, err := GetDBConnection(dbConfig)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+	defer db.Close()
+
+	rows, err := db.Query(`
+		WITH RECURSIVE date_series AS (
+			SELECT '2024-05-26' AS created_date
+			UNION ALL
+			SELECT created_date + INTERVAL 1 DAY
+			FROM date_series
+			WHERE created_date <= '2024-06-25'
+		), hour_series AS (
+			SELECT 0 AS hour_start, 6 AS hour_end
+			UNION ALL
+			SELECT 6 AS hour_start, 12 AS hour_end
+			UNION ALL
+			SELECT 12 AS hour_start, 18 AS hour_end
+			UNION ALL
+			SELECT 18 AS hour_start, 24 AS hour_end
+		)
+		SELECT
+			COALESCE(COUNT(DISTINCT id), 0) AS kyc_count,
+			date_series.created_date,
+			hour_series.hour_start,
+			hour_series.hour_end
+		FROM
+			date_series
+		CROSS JOIN
+			hour_series
+		LEFT JOIN
+			agent_kyc ON DATE_FORMAT(agent_kyc.created_at, '%Y-%m-%d') = date_series.created_date
+					AND agent_kyc.filled_at >= '2024-05-26' AND agent_kyc.filled_at <= '2024-06-25'
+					AND HOUR(agent_kyc.filled_at) >= hour_series.hour_start
+                    AND HOUR(agent_kyc.filled_at) < hour_series.hour_end
+		GROUP BY
+			date_series.created_date, hour_series.hour_start, hour_series.hour_end
+		ORDER BY
+			date_series.created_date, hour_series.hour_start;
+	`)
+	if err != nil {
+		panic(err.Error())
+	}
+	defer rows.Close()
+
+	result := make(map[string][4]uint)
+
+	for rows.Next() {
+		var kycCount uint
+		var createdAtStr string
+		var hourStart, hourEnd int
+
+		err = rows.Scan(&kycCount, &createdAtStr, &hourStart, &hourEnd)
+		if err != nil {
+			panic(err)
+		}
+
+		dateKey := createdAtStr
+		tempArray := result[dateKey]
+		index := (hourStart / 6) % 4
+		tempArray[index] += kycCount
+		result[dateKey] = tempArray
+
+	}
+	progress.Increment()
+	return result
+}
